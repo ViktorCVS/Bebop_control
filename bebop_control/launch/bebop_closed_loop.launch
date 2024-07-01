@@ -1,0 +1,15 @@
+<launch>
+
+  <!-- Iniciar a gravação do rosbag -->
+  <node pkg="rosbag" type="record" name="record" output="screen" args="-o /home/ubuntu/bebop_ws/src/Bebop_control/bebop_control/Bags/malha_fechada.bag /adjusted_odometry" />
+
+  <!-- Incluir o .launch de simulação -->
+  <include file="$(find rotors_gazebo)/launch/mav_velocity_control_with_fake_driver.launch"/>
+  
+  <!-- Iniciar a conversão de Odometry para CustomOdometry -->
+  <node pkg="bebop_control" type="bebop_odometry_to_adjusted.py" name="bebop_odometry_to_adjusted" output="screen" />
+
+  <!-- Lançar o nó principal de controle -->
+  <node pkg="bebop_control" type="bebop_closed_loop_node.py" name="bebop_closed_loop" output="screen" required="true" />
+  
+</launch>

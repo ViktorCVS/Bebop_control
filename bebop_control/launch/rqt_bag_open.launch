@@ -1,0 +1,4 @@
+<launch>
+    <!-- Executa o nó rqt_bag sem abrir um arquivo específico -->
+    <node name="rqt_bag" pkg="rqt_bag" type="rqt_bag" output="screen"/>
+</launch>
