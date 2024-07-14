@@ -13,6 +13,6 @@
   <node pkg="bebop_control" type="bebop_open_loop_node.py" name="bebop_open_loop" output="screen" required="true" />
 
   <!-- Lançar o nó para o cálculo de theta -->
-  <node pkg="bebop_control" type="model_estimation.py" name="model_estimation" output="screen" required="true" />
+  <node pkg="bebop_control" type="model_comparison.py" name="model_comparison" output="screen" required="true" />
   
 </launch>

@@ -65,7 +65,7 @@ class MovementController:
 
     def ref_trajectory(self,t):
 
-        u = 0.4/4.5*( 3*sin(0.2*pi*t) + sin(0.6*pi*t) + 0.5*sin(pi*t) )
+        u = 0.2*( sin(0.2*pi*t) + sin(0.4*pi*t) ) 
 
         return u 
 
