@@ -15,6 +15,7 @@ from math import pi, atan2, sin, cos, sqrt
 from datetime import datetime
 import os
 
+#rostopic echo /bebop/states/common/CommonState/BatteryStateChanged 
 
 class BebopPDTrajectory:
     def __init__(self):
