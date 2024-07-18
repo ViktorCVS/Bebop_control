@@ -29,43 +29,49 @@ class MovementController:
         self.tempo_para_decolar = 5
         self.tempo_para_iniciar = 10
 
-        self.en_x   = False
+        self.en_x   = True
         self.en_y   = False
         self.en_z   = False
-        self.en_yaw = True
+        self.en_yaw = False
 
         ## ------------------------------------------
         ## ---------- Interface do usuário ----------
         ## ------------------------------------------
 
-        while rospy.get_time()<self.tempo_para_decolar:
-            pass
+        time.sleep(3)
 
         rospy.loginfo("Decolando.")
 
         self.takeoff()
 
-        while rospy.get_time()<self.tempo_para_iniciar:
-            pass
+        time.sleep(8)
+
+        rospy.loginfo("Iniciando.")
 
         self.cmd_vel_pub = rospy.Publisher('/bebop/cmd_vel', Twist, queue_size=10)
 
         rospy.Timer(rospy.Duration(0.2), self.timer_callback)  
 
         self.twist_msg = Twist()
+
+        self.control_variable = 0
+
+        self.init_time = rospy.get_time()
         
     def timer_callback(self, event):
 
-        self.twist_msg.linear.x  = int(self.en_x) * self.ref_trajectory(rospy.get_time())
-        self.twist_msg.linear.y  = int(self.en_y) * self.ref_trajectory(rospy.get_time())
-        self.twist_msg.linear.z  = int(self.en_z) * self.ref_trajectory(rospy.get_time())
-        self.twist_msg.angular.z = int(self.en_yaw) * self.ref_trajectory(rospy.get_time())
+        self.twist_msg.linear.x  = int(self.en_x) * self.ref_trajectory(rospy.get_time()-self.init_time)
+        self.twist_msg.linear.y  = int(self.en_y) * self.ref_trajectory(rospy.get_time()-self.init_time)
+        self.twist_msg.linear.z  = int(self.en_z) * self.ref_trajectory(rospy.get_time()-self.init_time)
+        self.twist_msg.angular.z = int(self.en_yaw) * self.ref_trajectory(rospy.get_time()-self.init_time)
 
         self.cmd_vel_pub.publish(self.twist_msg)
 
+        self.control_variable += 1
+
     def ref_trajectory(self,t):
 
-        u = 0.2*( sin(0.2*pi*t) + sin(0.4*pi*t) ) 
+        u = 0.08*( 0.5*sin(0.2*pi*t) + sin(0.6*pi*t) + 0.5*sin(pi*t) )
 
         return u 
 
