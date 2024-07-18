@@ -29,16 +29,27 @@ class ModelEstimation:
 
         self.limite_dados = 2050
 
-        self.duration = 750
-        self.freq = 440
+        self.en_x   = True
+        self.en_y   = False
+        self.en_z   = False
+        self.en_yaw = False
 
-        self.s = time.time()
+        if(self.en_x):
+            self.pos_T = 0 
+        elif(self.en_y):
+            self.pos_T = 2
+        elif(self.en_z):
+            self.pos_T = 4
+        else:
+            self.pos_T = 6
 
     def get_pose_callback(self, msg):
 
         self.msg = msg
 
+
     def get_cmd_vel_callback(self, cmsg):
+
 
         g0 = self.msg.ddx*cos(self.msg.yaw) + self.msg.ddy*sin(self.msg.yaw)
         g1 = self.msg.dx*cos(self.msg.yaw) + self.msg.dy*sin(self.msg.yaw)
@@ -73,30 +84,30 @@ class ModelEstimation:
         print()
         print(T)
         print(len(self.GE)/4)
-        print(T[6,0],' ',T[7,0])
+        print(T[self.pos_T,0],' ',T[self.pos_T+1,0])
         
         
-        experimento = 10
+        experimento = 2
 
         if len(self.GE)/4 == self.limite_dados+1:
 
-            print(time.time()-self.s)
+            with open(f'/home/ubuntu/bebop_ws/src/Bebop_control/bebop_control/Bags/dados{self.pos_T}_{experimento}.txt', 'a') as f:
+                f.write(str(T[self.pos_T,0]))
 
-            with open(f'/home/ubuntu/bebop_ws/src/Bebop_control/bebop_control/Bags/dados7_{experimento}.txt', 'a') as f:
-                f.write(str(T[6,0]))
-
-            with open(f'/home/ubuntu/bebop_ws/src/Bebop_control/bebop_control/Bags/dados8_{experimento}.txt', 'a') as f:
-                f.write(str(T[7,0]))
+            with open(f'/home/ubuntu/bebop_ws/src/Bebop_control/bebop_control/Bags/dados{self.pos_T+1}_{experimento}.txt', 'a') as f:
+                f.write(str(T[self.pos_T+1,0]))
 
             rospy.signal_shutdown("Code sucessfuly executed.")
 
         else:
 
-            with open(f'/home/ubuntu/bebop_ws/src/Bebop_control/bebop_control/Bags/dados7_{experimento}.txt', 'a') as f:
-                f.write(str(T[6,0])+',')
+            print(str(T[self.pos_T+1,0]))
 
-            with open(f'/home/ubuntu/bebop_ws/src/Bebop_control/bebop_control/Bags/dados8_{experimento}.txt', 'a') as f:
-                f.write(str(T[7,0])+',')
+            with open(f'/home/ubuntu/bebop_ws/src/Bebop_control/bebop_control/Bags/dados{self.pos_T}_{experimento}.txt', 'a') as f:
+                f.write(str(T[self.pos_T,0])+',')
+
+            with open(f'/home/ubuntu/bebop_ws/src/Bebop_control/bebop_control/Bags/dados{self.pos_T+1}_{experimento}.txt', 'a') as f:
+                f.write(str(T[self.pos_T+1,0])+',')
 
 
 if __name__ == '__main__':
