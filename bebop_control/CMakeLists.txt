@@ -29,6 +29,6 @@ catkin_install_python(PROGRAMS
     src/bebop_closed_loop_node.py
     src/bebop_odometry_to_adjusted.py
     src/model_estimation.py
-    src/model_comparison.py
+    src/bebop_optitrack_to_adjusted.py
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
   )
