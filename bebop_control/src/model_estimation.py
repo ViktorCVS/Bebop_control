@@ -24,13 +24,15 @@ class ModelEstimation:
         rospy.Subscriber('/adjusted_odometry', CustomOdometry, self.get_pose_callback)
         rospy.Subscriber('/bebop/cmd_vel', Twist, self.get_cmd_vel_callback)
 
+        self.land_pub = rospy.Publisher('/bebop/land', Empty, queue_size=10)
+
         self.GE = None
         self.uE = None
 
         self.limite_dados = 2050
 
-        self.en_x   = True
-        self.en_y   = False
+        self.en_x   = False
+        self.en_y   = True
         self.en_z   = False
         self.en_yaw = False
 
@@ -42,6 +44,9 @@ class ModelEstimation:
             self.pos_T = 4
         else:
             self.pos_T = 6
+
+    def land(self):
+        self.land_pub.publish(Empty())
 
     def get_pose_callback(self, msg):
 
@@ -81,10 +86,10 @@ class ModelEstimation:
         T = GE_3*self.uE
 
         
-        print()
-        print(T)
+        # print()
+        # print(T)
         print(len(self.GE)/4)
-        print(T[self.pos_T,0],' ',T[self.pos_T+1,0])
+        # print(T[self.pos_T,0],' ',T[self.pos_T+1,0])
         
         
         experimento = 2
@@ -97,11 +102,11 @@ class ModelEstimation:
             with open(f'/home/ubuntu/bebop_ws/src/Bebop_control/bebop_control/Bags/dados{self.pos_T+1}_{experimento}.txt', 'a') as f:
                 f.write(str(T[self.pos_T+1,0]))
 
+            self.land()
+            time.sleep(3)
             rospy.signal_shutdown("Code sucessfuly executed.")
 
         else:
-
-            print(str(T[self.pos_T+1,0]))
 
             with open(f'/home/ubuntu/bebop_ws/src/Bebop_control/bebop_control/Bags/dados{self.pos_T}_{experimento}.txt', 'a') as f:
                 f.write(str(T[self.pos_T,0])+',')
