@@ -12,7 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 catkin_package(
-  CATKIN_DEPENDS rospy std_msgs geometry_msgs custom_msgs gazebo_msgs
+  CATKIN_DEPENDS rospy std_msgs geometry_msgs custom_msgs gazebo_msgs bebop_msgs
 )
 
 include_directories(
@@ -30,5 +30,6 @@ catkin_install_python(PROGRAMS
     src/bebop_odometry_to_adjusted.py
     src/model_estimation.py
     src/bebop_optitrack_to_adjusted.py
+    src/security_node.py
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
   )
