@@ -44,7 +44,7 @@ class SecurityNode:
                     rospy.loginfo("Velocidade em X acima do enviado!")
                     self.DELAY_CMD[0] = False
         else:
-            if self.pose_msg.dx > 0.08:
+            if self.pose_msg.dx > 0.1:
                 if self.DELAY_CMD[0] == True:
                     rospy.loginfo("Velocidade em X acima do enviado!")
                     self.DELAY_CMD[0] = False
@@ -55,7 +55,7 @@ class SecurityNode:
                     rospy.loginfo("Velocidade em Y acima do enviado!")
                     self.DELAY_CMD[1] = False
         else:
-            if self.pose_msg.dy > 0.08:
+            if self.pose_msg.dy > 0.1:
                 if self.DELAY_CMD[1] == True:
                     rospy.loginfo("Velocidade em Y acima do enviado!")
                     self.DELAY_CMD[1] = False
@@ -66,7 +66,7 @@ class SecurityNode:
                     rospy.loginfo("Velocidade em Z acima do enviado!")
                     self.DELAY_CMD[2] = False
         else:
-            if self.pose_msg.dz > 0.08:
+            if self.pose_msg.dz > 0.1:
                 if self.DELAY_CMD[2] == True:
                     rospy.loginfo("Velocidade em Z acima do enviado!")
                     self.DELAY_CMD[2] = False
@@ -77,7 +77,7 @@ class SecurityNode:
                     rospy.loginfo("Velocidade em YAW acima do enviado!")
                     self.DELAY_CMD[3] = False
         else:
-            if self.pose_msg.dyaw > 0.08:
+            if self.pose_msg.dyaw > 0.1:
                 if self.DELAY_CMD[3] == True:
                     rospy.loginfo("Velocidade em YAW acima do enviado!")
                     self.DELAY_CMD[3] = False
