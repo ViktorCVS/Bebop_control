@@ -29,8 +29,8 @@ class SecurityNode:
         self.CONTADOR_POSE = [0,0,0,0]
         self.CONTADOR_CMD = [0,0,0,0]
 
-        self.TEMPO_CONTADOR_CMD = 75
-        self.TEMPO_CONTADOR_ṔOSE = 2000
+        self.TEMPO_CONTADOR_CMD = 200
+        self.TEMPO_CONTADOR_POSE = 2000
 
         self.DELAY_CMD = [True,True,True,True]
 
@@ -47,6 +47,7 @@ class SecurityNode:
             if self.pose_msg.dx > 0.08:
                 if self.DELAY_CMD[0] == True:
                     rospy.loginfo("Velocidade em X acima do enviado!")
+                    self.DELAY_CMD[0] = False
 
         if msg.linear.y != 0:
             if self.pose_msg.dy > msg.linear.y*self.CMD_WARNING:
@@ -70,7 +71,7 @@ class SecurityNode:
                     rospy.loginfo("Velocidade em Z acima do enviado!")
                     self.DELAY_CMD[2] = False
 
-        if msg.angular.yaw != 0:
+        if msg.angular.z != 0:
             if self.pose_msg.dyaw > msg.angular.z*self.CMD_WARNING:
                 if self.DELAY_CMD[3] == True:
                     rospy.loginfo("Velocidade em YAW acima do enviado!")
@@ -122,7 +123,7 @@ class SecurityNode:
         if msg.y >= self.y_limits[1] or msg.y <= self.y_limits[0]:
             rospy.loginfo("Limite em Y atingido!")
             self.land()
-        elif msg.y >= self.y_limits[1]*self.WARNING or msg.y <= self.y_limits[0]*self.WARNING and self.CONTADOR_POSE%self.TEMPO_CONTADOR_POSE==0:
+        elif msg.y >= self.y_limits[1]*self.WARNING or msg.y <= self.y_limits[0]*self.WARNING:
             if self.DELAY_POSE[1] == True:
                 rospy.loginfo("Limite em Y perto de ser atingido!")
                 self.DELAY_POSE[1] = False
@@ -130,7 +131,7 @@ class SecurityNode:
         if msg.z >= self.z_limit:
             rospy.loginfo("Limite em z atingido!")
             self.land()
-        elif msg.z >= self.z_limit*self.WARNING and self.CONTADOR_POSE%self.TEMPO_CONTADOR_POSE==0:
+        elif msg.z >= self.z_limit*self.WARNING:
             if self.DELAY_POSE[2] == True:
                 rospy.loginfo("Limite em Z perto de ser atingido!")
                 self.DELAY_POSE[2] = False
@@ -143,7 +144,6 @@ class SecurityNode:
             self.DELAY_POSE[0] = True
             self.DELAY_POSE[1] = True
             self.DELAY_POSE[2] = True
-            self.DELAY_POSE[3] = True
         
 
     def land(self):
