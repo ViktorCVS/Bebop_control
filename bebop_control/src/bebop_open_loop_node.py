@@ -29,8 +29,8 @@ class MovementController:
         self.tempo_para_decolar = 5
         self.tempo_para_iniciar = 10
 
-        self.en_x   = True
-        self.en_y   = False
+        self.en_x   = False
+        self.en_y   = True
         self.en_z   = False
         self.en_yaw = False
 
@@ -38,7 +38,7 @@ class MovementController:
         ## ---------- Interface do usuário ----------
         ## ------------------------------------------
 
-        time.sleep(3)
+        time.sleep(2)
 
         rospy.loginfo("Decolando.")
 
