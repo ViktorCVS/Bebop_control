@@ -30,8 +30,8 @@ class MovementController:
         self.tempo_para_iniciar = 10
 
         self.en_x   = False
-        self.en_y   = True
-        self.en_z   = False
+        self.en_y   = False
+        self.en_z   = True
         self.en_yaw = False
 
         ## ------------------------------------------
@@ -71,7 +71,10 @@ class MovementController:
 
     def ref_trajectory(self,t):
 
-        u = 0.08*( 0.5*sin(0.2*pi*t) + sin(0.6*pi*t) + 0.5*sin(pi*t) )
+        if self.en_x or self.en_y:
+            u = 0.08*( 0.5*sin(0.2*pi*t) + sin(0.6*pi*t) + 0.5*sin(pi*t) )
+        else:
+            u = 0.2*( 0.5*sin(0.2*pi*t) + sin(0.6*pi*t) + 0.5*sin(pi*t) )
 
         return u 
 
