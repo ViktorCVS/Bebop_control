@@ -11,6 +11,7 @@ from time import time
 import os
 import signal
 from math import sin, cos, pi
+import numpy as np
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
 
 
@@ -20,13 +21,12 @@ class BebopOdometryToAdjusted:
         rospy.init_node('bebop_odometry_to_adjusted', anonymous=True)
 
         rospy.Subscriber('/natnet_ros/Bebop2/pose', PoseStamped, self.get_pose_callback)
+        
         self.adjusted_odometry_pub = rospy.Publisher('/adjusted_odometry', CustomOdometry, queue_size=100)
-
-        self.initial_pose = [1.6, 1.2, -pi/2]
-        #self.initial_pose = [6.0, 6.0, pi/4]
 
         self.vel = [[0,0],[0,0],[0,0],[0,0],[0,0],[0,0]]
         self.acc = [[0,0],[0,0],[0,0],[0,0],[0,0],[0,0]]
+        self.POS_FILTERED = np.zeros((7,6))
         self.diff_time = [0,0]
         
         self.adjusted_odometry_msg = CustomOdometry()
@@ -43,21 +43,27 @@ class BebopOdometryToAdjusted:
         Orientation_euler = list(euler_from_quaternion(Orientation_quaternion))
         Orientation_euler_adjusted = [Orientation_euler[0],Orientation_euler[1],Orientation_euler[2]]
 
-        self.vel[0][1] = Position[0]
-        self.vel[1][1] = Position[1]
-        self.vel[2][1] = Position[2]
-        self.vel[3][1] = Orientation_euler_adjusted[0]
-        self.vel[4][1] = Orientation_euler_adjusted[1]
-        self.vel[5][1] = Orientation_euler_adjusted[2]
+        self.POS_FILTERED[6,0] = Position[0]
+        self.POS_FILTERED[6,1] = Position[1]
+        self.POS_FILTERED[6,2] = Position[2]
+        self.POS_FILTERED[6,3] = Orientation_euler_adjusted[0]
+        self.POS_FILTERED[6,4] = Orientation_euler_adjusted[1]
+        self.POS_FILTERED[6,5] = Orientation_euler_adjusted[2]
 
+        self.adjusted_odometry_msg.x = sum(self.POS_FILTERED[:,0])/7
+        self.adjusted_odometry_msg.y = sum(self.POS_FILTERED[:,1])/7
+        self.adjusted_odometry_msg.z = sum(self.POS_FILTERED[:,2])/7
 
-        self.adjusted_odometry_msg.x = Position[0]
-        self.adjusted_odometry_msg.y = Position[1]
-        self.adjusted_odometry_msg.z = Position[2]
+        self.adjusted_odometry_msg.roll  = sum(self.POS_FILTERED[:,3])/7
+        self.adjusted_odometry_msg.pitch = sum(self.POS_FILTERED[:,4])/7
+        self.adjusted_odometry_msg.yaw   = sum(self.POS_FILTERED[:,5])/7
 
-        self.adjusted_odometry_msg.roll  = Orientation_euler_adjusted[0]
-        self.adjusted_odometry_msg.pitch = Orientation_euler_adjusted[1]
-        self.adjusted_odometry_msg.yaw   = Orientation_euler_adjusted[2]
+        self.vel[0][1] = self.adjusted_odometry_msg.x
+        self.vel[1][1] = self.adjusted_odometry_msg.y
+        self.vel[2][1] = self.adjusted_odometry_msg.z
+        self.vel[3][1] = self.adjusted_odometry_msg.roll
+        self.vel[4][1] = self.adjusted_odometry_msg.pitch
+        self.vel[5][1] = self.adjusted_odometry_msg.yaw
 
         self.adjusted_odometry_msg.dx = (self.vel[0][1] - self.vel[0][0])/(self.diff_time[1] - self.diff_time[0])
         self.adjusted_odometry_msg.dy = (self.vel[1][1] - self.vel[1][0])/(self.diff_time[1] - self.diff_time[0])
@@ -80,6 +86,7 @@ class BebopOdometryToAdjusted:
         self.adjusted_odometry_msg.ddpitch = (self.acc[4][1] - self.acc[4][0])/(self.diff_time[1] - self.diff_time[0])
         self.adjusted_odometry_msg.ddyaw = (self.acc[5][1] - self.acc[5][0])/(self.diff_time[1] - self.diff_time[0])
 
+        self.POS_FILTERED[0:6,:]=self.POS_FILTERED[1:7,:]
 
         self.vel[0][0] = self.vel[0][1]
         self.vel[1][0] = self.vel[1][1]
