@@ -1,18 +1,33 @@
 <launch>
 
+  <!-- Defina o argumento com um valor padrão -->
+  <arg name="Axis" default="x"/>
+  <arg name="Node" default="open"/>
+  <arg name="Estimation" default="True"/>
+
+  <!-- Definir o parâmetro Axis -->
+  <param name="Axis" value="$(arg Axis)"/>
+  <param name="Node" value="$(arg Node)"/>
+  <param name="Estimation" value="$(arg Estimation)"/>
+
   <!-- Iniciar a gravação do rosbag -->
-  <node pkg="rosbag" type="record" name="record" output="screen" args="-o /home/ubuntu/bebop_ws/src/Bebop_control/bebop_control/Bags/malha_aberta.bag /adjusted_odometry" />
+  <node pkg="rosbag" type="record" name="record" output="screen" args="-o /home/ubuntu/bebop_ws/src/Bebop_control/bebop_control/Bags/malha_aberta_$(arg Axis).bag /adjusted_odometry /bebop/cmd_vel" />
 
   <!-- Incluir o .launch de simulação -->
-  <include file="$(find rotors_gazebo)/launch/mav_velocity_control_with_fake_driver.launch"/>
+  <!--<include file="$(find bebop_driver)/launch/mav_velocity_control_with_fake_driver.launch"/>-->
   
   <!-- Iniciar a conversão de Odometry para CustomOdometry -->
-  <node pkg="bebop_control" type="bebop_odometry_to_adjusted.py" name="bebop_odometry_to_adjusted" output="screen" />
+  <node pkg="bebop_control" type="bebop_optitrack_to_adjusted.py" name="bebop_optitrack_to_adjusted" output="screen" />
 
   <!-- Lançar o nó principal de controle -->
-  <node pkg="bebop_control" type="bebop_open_loop_node.py" name="bebop_open_loop" output="screen" required="true" />
+  <node pkg="bebop_control" type="bebop_open_loop_roll_pitch.py" name="bebop_open_loop_roll_pitch" output="screen" required="true" />
 
-  <!-- Lançar o nó para o cálculo de theta -->
-  <node pkg="bebop_control" type="model_estimation.py" name="model_estimation" output="screen" required="true" />
+  <!-- <node pkg="bebop_control" type="model_estimation.py" name="model_estimation" output="screen" required="true" /> -->
+
+
+
+
+  <!-- Lançar o nó para a segurança do drone -->
+  <!-- <node pkg="bebop_control" type="security_node.py" name="security_node" output="screen" required="true" /> -->
   
 </launch>
