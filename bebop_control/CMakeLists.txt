@@ -37,5 +37,7 @@ catkin_install_python(PROGRAMS
     src/bebop_open_loop_roll_pitch.py
     src/bebop_open_loop_pi_isa.py
     src/bebop_open_25.11.2024.py
+    src/bebop_open_03.02.2025.py
+    src/world_to_bebop.py
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
   )
